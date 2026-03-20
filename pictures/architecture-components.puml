@@ -1,0 +1,27 @@
+﻿@startuml
+skinparam componentStyle rectangle
+left to right direction
+
+title Doggy - High-Level Component Diagram
+
+actor User
+
+rectangle "Tier 1 - Presentation" as T1 {
+  component "Web Client\n(React + Vite)" as Web
+}
+
+rectangle "Tier 2 - Application/API" as T2 {
+  component "Backend API\n(FastAPI)" as Api
+}
+
+rectangle "Tier 3 - AI Services" as T3 {
+  component "Dog Recognition Module\n(in-process ML)" as DogRec
+  component "LLM Advice Service\n(Hugging Face Inference)" as LLM
+}
+
+User --> Web : Upload image / view result
+Web --> Api : HTTP POST /api/dog-from-photo
+Api --> DogRec : in-process: is_dog(image), predict(image)
+Api --> LLM : generate_advice(breed)
+Api --> Web : JSON {breed, advice, raw_predictions}
+@enduml

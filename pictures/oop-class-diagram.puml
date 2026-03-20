@@ -1,0 +1,254 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+title Doggy - OOP Class Diagram (Detailed UML Notation)
+
+package "User Interaction Context (Frontend)" {
+  interface IApiClient {
+    +postDogFromPhoto(file: File): DogFromPhotoResponse
+    +parseError(payload: any): ApiErrorResponse
+  }
+
+  class DogApiClient <<service>> {
+    -baseUrl: string
+    {static} +DEFAULT_TIMEOUT_MS: int
+    +postDogFromPhoto(file: File): DogFromPhotoResponse
+    +parseError(payload: any): ApiErrorResponse
+  }
+
+  class UseBreedIdentification <<service>> {
+    -apiClient: IApiClient
+    -isAnalyzing: bool
+    #requestState: RequestState
+    -result: AnalysisResult?
+    -error: ApiErrorMessage?
+    +identifyBreed(file: File): Promise<AnalysisResult>
+    +reset(): void
+  }
+
+  class SelectedImage <<value object>> {
+    +name: string
+    +mimeType: string
+    +sizeBytes: int
+    +isValidImage(): bool
+  }
+
+  class RequestState <<value object>> {
+    +phase: AnalysisStatus
+    +message: string
+    +isTerminal(): bool
+  }
+
+  class ApiErrorMessage <<value object>> {
+    +message: string
+    +toUserMessage(): string
+  }
+}
+
+package "Analysis Orchestration Context (Backend API)" {
+  enum AnalysisStatus {
+    RECEIVED
+    DOG_CHECKED
+    BREED_PREDICTED
+    ADVICE_GENERATED
+    COMPLETED
+    FAILED
+  }
+
+  abstract class ApiResponseBase <<dto>> {
+    #traceId: string
+    {abstract} +toJson(): map
+  }
+
+  class PhotoAnalysis <<aggregate>> {
+    -imagePath: string
+    #status: AnalysisStatus
+    -breed: BreedLabel
+    -rawPredictions: RawPrediction[*]
+    -advice: AdviceText
+    +runDogCheck(model: IClassifierService): DogValidationResult
+    +runBreedPrediction(model: IClassifierService): RawPrediction[*]
+    +runAdviceGeneration(llm: IAdviceService): AdviceText
+    +buildResponse(): DogFromPhotoResponse
+  }
+
+  class BreedLabel <<value object>> {
+    +value: string
+    +normalize(rawLabel: string): BreedLabel
+  }
+
+  class RawPrediction <<value object>> {
+    +label: string
+    +score: float
+    +isTop(minScore: float): bool
+  }
+
+  class AdviceText <<value object>> {
+    +value: string
+    +isEmpty(): bool
+  }
+
+  class AnalysisResult <<value object>> {
+    +breed: BreedLabel
+    +advice: AdviceText
+    +rawPredictions: RawPrediction[*]
+    +toViewModel(): map
+  }
+
+  class DogFromPhotoResponse <<dto>> {
+    +breed: string
+    +advice: string
+    +raw_predictions: RawPrediction[*]
+    +toJson(): map
+  }
+
+  class ApiErrorResponse <<dto>> {
+    +error: string
+    +code: int
+    +toJson(): map
+  }
+}
+
+package "Dog Recognition Context (ML Module)" {
+  interface IClassifierService {
+    +is_dog(imagePath: string): bool
+    +predict(imagePath: string): RawPrediction[*]
+  }
+
+  class DogRecognitionModel <<service>> {
+    -zeroShotModel: Pipeline
+    -breedClassifier: Pipeline
+    {static} +TOP_K: int
+    +is_dog(imagePath: string): bool
+    +predict(imagePath: string): RawPrediction[*]
+  }
+
+  class DogValidationResult <<value object>> {
+    +isDog: bool
+    +reason: string
+    +passed(): bool
+  }
+}
+
+package "Advice Generation Context (LLM Integration)" {
+  interface IAdviceService {
+    +generate_advice(breed: BreedLabel): AdviceText
+  }
+
+  class DogLLMEngine <<service>> {
+    -client: InferenceClient
+    -model_name: string
+    {static} +DEFAULT_MODEL: string
+    +generate_advice(breed: BreedLabel): AdviceText
+  }
+
+  class AdvicePrompt <<value object>> {
+    +breed: BreedLabel
+    +template: string
+    +render(): string
+  }
+}
+
+package "Domain Events" {
+  abstract class DomainEvent <<event>> {
+    +eventId: string
+    #occurredAt: datetime
+    {abstract} +name(): string
+  }
+
+  class PhotoReceived <<event>> {
+    +fileName: string
+    +imagePath: string
+    +name(): string
+  }
+
+  class DogValidated <<event>> {
+    +isDog: bool
+    +reason: string
+    +name(): string
+  }
+
+  class BreedPredictionsComputed <<event>> {
+    +topBreed: string
+    +count: int
+    +name(): string
+  }
+
+  class AdviceGenerationCompleted <<event>> {
+    +adviceLength: int
+    +name(): string
+  }
+
+  class AnalysisCompleted <<event>> {
+    +success: bool
+    +responseSize: int
+    +name(): string
+  }
+}
+
+' implementation (dashed line + triangle)
+DogApiClient ..|> IApiClient
+DogRecognitionModel ..|> IClassifierService
+DogLLMEngine ..|> IAdviceService
+
+' inheritance / extends (solid line + triangle)
+DogFromPhotoResponse --|> ApiResponseBase
+ApiErrorResponse --|> ApiResponseBase
+PhotoReceived --|> DomainEvent
+DogValidated --|> DomainEvent
+BreedPredictionsComputed --|> DomainEvent
+AdviceGenerationCompleted --|> DomainEvent
+AnalysisCompleted --|> DomainEvent
+
+' composition (filled diamond)
+UseBreedIdentification *-- RequestState
+UseBreedIdentification *-- SelectedImage
+UseBreedIdentification *-- ApiErrorMessage
+PhotoAnalysis *-- BreedLabel
+PhotoAnalysis *-- AdviceText
+
+' aggregation (white diamond)
+PhotoAnalysis o-- RawPrediction : aggregates 0..*
+
+' associations
+UseBreedIdentification --> IApiClient : uses
+UseBreedIdentification --> AnalysisResult : sets
+DogApiClient --> DogFromPhotoResponse : returns
+DogApiClient --> ApiErrorResponse : returns
+ApiErrorResponse --> ApiErrorMessage : maps to
+
+PhotoAnalysis --> IClassifierService : depends on
+PhotoAnalysis --> IAdviceService : depends on
+PhotoAnalysis --> AnalysisResult : produces
+PhotoAnalysis --> DogFromPhotoResponse : maps to
+PhotoAnalysis --> AnalysisStatus : tracks
+IClassifierService --> DogValidationResult : returns
+IClassifierService --> RawPrediction : returns
+IAdviceService --> AdvicePrompt : consumes
+IAdviceService --> AdviceText : returns
+
+' event emissions
+PhotoAnalysis ..> PhotoReceived : emits
+PhotoAnalysis ..> DogValidated : emits
+PhotoAnalysis ..> BreedPredictionsComputed : emits
+PhotoAnalysis ..> AdviceGenerationCompleted : emits
+PhotoAnalysis ..> AnalysisCompleted : emits
+
+legend right
+  Visibility:
+  + public
+  # protected
+  - private
+
+  Relations:
+  --|> extends (inheritance)
+  ..|> implements (interface realization)
+  *-- composition
+  o-- aggregation
+  --> association (directed)
+  ..> dependency / event emission
+endlegend
+@enduml

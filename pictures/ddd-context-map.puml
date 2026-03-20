@@ -1,0 +1,73 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+title Doggy - DDD Context Map (Contexts, Concepts, Events)
+
+actor User
+
+rectangle "User Interaction Context\n(Frontend)" as UI
+rectangle "Analysis Orchestration Context\n(Backend API)" as ORCH
+rectangle "Dog Recognition Context\n(In-process ML Module)" as RECOG
+rectangle "Advice Generation Context\n(External LLM API)" as ADVICE
+
+User --> UI : ImageUploaded
+UI --> ORCH : AnalysisRequested\n(HTTP POST /api/dog-from-photo)
+ORCH --> RECOG : DogCheckRequested\nBreedPredictionRequested
+RECOG --> ORCH : DogValidated\nBreedPredictionsComputed
+ORCH --> ADVICE : AdviceGenerationStarted
+ADVICE --> ORCH : AdviceGenerationCompleted\nor AdviceGenerationFailed
+ORCH --> UI : AnalysisCompleted\n(JSON {breed, advice, raw_predictions})
+ORCH --> UI : ErrorDisplayed
+
+note bottom of UI
+Domain concepts:
+- SelectedImage
+- RequestState
+- ApiErrorMessage
+
+Events:
+- ImageUploaded
+- AnalysisRequested
+- ResultDisplayed
+- ErrorDisplayed
+end note
+
+note bottom of ORCH
+Domain concepts:
+- PhotoAnalysis (aggregate)
+- BreedLabel
+- RawPrediction
+- AdviceText
+- AnalysisResult
+
+Events:
+- PhotoReceived
+- DogCheckPassed / DogCheckFailed
+- BreedPredicted
+- AdviceRequested / AdviceReceived
+- AnalysisCompleted
+end note
+
+note bottom of RECOG
+Domain concepts:
+- DogValidationResult
+- RawPrediction
+
+Events:
+- DogValidated
+- BreedPredictionsComputed
+end note
+
+note bottom of ADVICE
+Domain concepts:
+- AdvicePrompt
+- AdviceText
+
+Events:
+- AdviceGenerationStarted
+- AdviceGenerationCompleted
+- AdviceGenerationFailed
+end note
+@enduml

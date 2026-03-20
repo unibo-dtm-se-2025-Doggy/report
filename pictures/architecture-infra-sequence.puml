@@ -1,0 +1,39 @@
+@startuml
+autonumber
+skinparam shadowing false
+
+title Doggy - Infrastructure Request Flow (Production, 15 stages)
+
+actor User
+participant "Web Browser" as Browser
+participant "DNS" as DNS
+participant "Platform Firewall" as Firewall
+participant "Fly.io Edge" as Edge
+participant "FastAPI Backend" as Api
+participant "Dog Recognition Module\n(in-process)" as DogRec
+participant "LLM API\n(Hugging Face / OpenRouter)" as Llm
+
+User -> Browser: Upload image
+Browser -> DNS: Resolve API host
+DNS --> Browser: Endpoint resolved
+Browser -> Firewall: HTTPS POST /api/dog-from-photo
+Firewall -> Edge: Allow and pass request
+Edge -> Api: Forward API request
+
+Api -> DogRec: is_dog(image)
+DogRec --> Api: Validation result
+Api -> DogRec: predict_breed(image)
+DogRec --> Api: raw_predictions
+Api -> Llm: Generate advice (breed context)
+Llm --> Api: Advice text
+Api --> Edge: JSON {breed, advice, raw_predictions}
+Edge --> Firewall: Forward response
+Firewall --> Browser: Final response
+
+note right of Browser
+Dev mode:
+Frontend calls backend via
+VITE_API_BASE_URL directly.
+end note
+
+@enduml
