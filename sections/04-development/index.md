@@ -50,3 +50,4 @@ This stack was selected because it ensures:
 
 The team follows PEP 8 for backend style consistency.
 Using an IDE such as VS Code is recommended, as it provides automatic formatting, error checking, and integrated Git support.
+For local developer workflow, VS Code terminal tasks (`.vscode/tasks.json`) were configured to simplify bootstrap and run commands for backend/frontend.
