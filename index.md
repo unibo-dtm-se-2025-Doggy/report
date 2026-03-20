@@ -5,23 +5,22 @@ has_children: false
 nav_order: 1
 ---
 
-# Project title
+# Doggy - Dog Breed Identifier
 
-### Authors
+## Authors
 
-- [Giovanni Ciatto](mailto:giovanni.ciatto@unibo.it)
-- [Davide Domini](mailto:davide.domini@unibo.it)
+- Alina Iakubova - alina.iakubova@studio.unibo.it
+- Svetlana Vertegel - svetlana.vertegel@studio.unibo.it
+- Diana Zhigalkina - diana.zhigalkina@studio.unibo.it
 
 ## Abstract
 
-(~ 2000 characters)
+Doggy is a full-stack project for dog breed identification from photos, followed by short care and lifestyle suggestions. Users upload an image through a React frontend, and a FastAPI backend performs breed analysis and generates readable guidance. The system is designed for usability, so non-expert users can get useful feedback quickly.
 
-Here you should briefly explain what the project is about.
+The project also focuses on software quality: modular architecture, documented API (OpenAPI), automated tests, CI workflows, and deployment automation. Overall, Doggy combines practical AI functionality with maintainable engineering practices and can be extended with improved models and richer recommendations.
 
 ## Disclaimer (if needed)
 
-During the preparation of this work, the author(s) used [NAME TOOL / SERVICE] to [REASON].
+During the preparation of this work, we used Codex (OpenAI) to support drafting and language refinement of parts of the report text.
 
-After using this tool/service, the author(s) reviewed and edited the content as needed
-and take(s) full responsibility for the content of the final report/artifact.
-
+After using this tool/service, we reviewed and edited the content as needed and take full responsibility for the content of the final report/artifact.

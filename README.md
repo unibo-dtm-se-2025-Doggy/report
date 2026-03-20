@@ -2,9 +2,9 @@
 
 This repository contains the project report and documentation related to Doggy, a web application that allows users to upload a dog photo and receive AI-based breed identification together with practical care recommendations, created as part of a University Software Engineering coursework assignment.
 
-- To access the project work documentation, click [here](https://github.com/DSZHIG-unibo-dtm-se-2025-Doggy/report).
+- To access the project work documentation, click [here](https://github.com/unibo-dtm-se-2025-Doggy/report).
 
-- To access the repository containing all of the project work discussed in the report, click [here](https://github.com/DSZHIG-unibo-dtm-se-2025-Doggy/Doggy).
+- To access the repository containing all of the project work discussed in the report, click [here](https://github.com/unibo-dtm-se-2025-Doggy/Doggy).
 
 - To access the template used for this report, click [here](https://github.com/unibo-dtm-se/template-project-work).
 
@@ -15,7 +15,7 @@ You need to install __Ruby__ on your machine (instructions below).
 1. Assuming that Ruby is correctly installed, you need to clone your report repository on your machine:
 
     ```bash
-    git clone https://github.com/DSZHIG-unibo-dtm-se-2025-Doggy/report
+    git clone https://github.com/unibo-dtm-se-2025-Doggy/report
     ```
 
 2. Then, you need to restore Jeckyll's dependencies.
