@@ -19,6 +19,8 @@ nav_order: 12
 - Strengths: automated workflows for linting, type checking, and testing across multiple Python versions and OS; backend successfully deployed to Fly.io with the minimal machine configuration that meets the app's requirements
 - Weaknesses: the deployment has a strong dependency on Fly.io — if the platform experiences downtime or issues, the LLM advice generation becomes unavailable and the app cannot serve users
 
-### Contributor 3
+### Diana Zhigalkina
 
-- _to be filled by teammate_
+- Self-evaluation: I was responsible for the frontend — UI components, API integration, frontend CI, and testing infrastructure
+- Strengths: clean and responsive UI with smooth loading states and clear error feedback; intuitive image upload flow with drag-and-drop and preview; results are well-structured and readable; frontend CI validates lint, build and tests on every push
+- Weaknesses: UI component test coverage remains minimal; app behaviour depends on correct environment configuration, which is not validated at startup
