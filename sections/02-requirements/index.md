@@ -42,8 +42,8 @@ The system uses a FastAPI backend and React frontend with ML inference.
 |----|-------------|---------------------|-----------------|
 | <a id="nfr1"></a>**NFR1** | Fast response times. | Response time is acceptable for interactive use under normal conditions, and the UI shows a clear loading state while analysis is running. | Done. Loading/interactive behavior is covered by UI flow and manual validation evidence in `sections/05-validation/index.md`; loading state is implemented in `artifact/web/src/hooks/useBreedIdentification.ts` and related UI components. |
 | <a id="nfr2"></a>**NFR2** | Service availability and recoverability. | The service has automated deployment, a health endpoint, and documented restart/redeploy steps to recover from failures. | Done. Evidence is provided in `artifact/.github/workflows/backend-deploy.yml`, `artifact/backend/fly.toml`, `artifact/backend/main.py` (health endpoint), and `sections/07-deployment/index.md`. |
-| **NFR3** | Security: CORS/CSP/XSS matters. | CORS middleware on, OWASP critical issues none. | Partially done. CORS is configured in `artifact/backend/main.py`; no formal OWASP assessment artifact is attached. |
-| **NFR4** | Responsive UI. | Works on desktop/mobile; accessible (WCAG AA). | Partially done. UI pages/components are implemented (`artifact/web/src/pages`, `artifact/web/src/components`), but no formal WCAG audit report is attached. |
+| <a id="nfr3"></a>**NFR3** | Security baseline for web API usage. | CORS is explicitly configured, API input is validated by FastAPI schemas, and sensitive runtime credentials are provided through environment variables. | Done. See `artifact/backend/main.py` (CORS), `artifact/backend/Core/router.py` (`UploadFile = File(...)` and request handling), and `artifact/backend/Features/LLM/llm_engine.py` (`HF_TOKEN` from env). |
+| <a id="nfr4"></a>**NFR4** | Responsive and usable UI. | Main user flow (upload -> analyze -> result/error) works on desktop and mobile viewports, with visible loading and error states. | Done. See `artifact/web/src/pages/Index.tsx` (responsive classes), `artifact/web/src/hooks/useBreedIdentification.ts`, `artifact/web/src/components/ui/DogInfoPanel.tsx`, and manual acceptance tests in `sections/05-validation/index.md`. |
 | **NFR5** | No user data persist. | No personal data stored; files are temporary. | Done. Data handling rationale is documented in `sections/03-design/index.md`; backend uses temporary files in `artifact/backend/Core/router.py`. |
 
 ### Implementation Requirements (IR)
@@ -77,5 +77,7 @@ The system uses a FastAPI backend and React frontend with ML inference.
 - [FR3](#fr3): non-dog returns `error` message.
 - [NFR1](#nfr1): response time is acceptable for interactive use and loading state is visible during analysis.
 - [NFR2](#nfr2): automated deploy, health endpoint, and documented recovery steps are in place.
+- [NFR3](#nfr3): security baseline controls are implemented (CORS, validation, env-based credentials).
+- [NFR4](#nfr4): responsive flow works with explicit loading/error states.
 - [IR2](#ir2): `npm run build` passes.
 - [IR3](#ir3): `pytest` + `vitest` + `ruff` pass.

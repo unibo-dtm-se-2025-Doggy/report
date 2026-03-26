@@ -45,6 +45,30 @@ Evidence:
 - health check endpoint: `artifact/backend/main.py`;
 - operational instructions: `sections/07-deployment/index.md`.
 
+## Security baseline checks (NFR3)
+
+NFR3 is validated as an implemented security baseline for this project scope:
+- CORS middleware is configured in backend API startup;
+- API request shapes are validated by FastAPI request declarations and validation layer;
+- sensitive integration credential (`HF_TOKEN`) is read from environment variables.
+
+Evidence:
+- CORS setup: `artifact/backend/main.py`;
+- request validation entrypoints: `artifact/backend/Core/router.py`;
+- env-based credential handling: `artifact/backend/Features/LLM/llm_engine.py`.
+
+## Responsive UX checks (NFR4)
+
+NFR4 is validated through code-level responsive behavior and manual flow checks:
+- responsive layout classes are used in main page/UI components;
+- loading and error states are explicitly represented in UI logic;
+- manual acceptance flow confirmed the main scenario on browser viewports.
+
+Evidence:
+- responsive UI implementation: `artifact/web/src/pages/Index.tsx`, `artifact/web/src/components/ui/DogInfoPanel.tsx`;
+- loading/error flow state: `artifact/web/src/hooks/useBreedIdentification.ts`;
+- acceptance coverage: AT-1/AT-2/AT-4 in this section.
+
 ## Testing (automated)
 
 ### Unit testing

@@ -23,6 +23,7 @@ Why not alternatives (for current scope):
 - not **event-based**: the workflow is synchronous request/response, with no queue or event stream
 - not **shared-dataspace**: there is no shared persistent data core that coordinates components
 - not **microservice/object-based distributed decomposition**: current project size does not justify added operational complexity
+- not **hexagonal architecture**: for this project scope, a layered client-server design provides sufficient separation of concerns with lower implementation overhead
 
 ### Chosen structure
 
