@@ -11,7 +11,6 @@ nav_order: 12
 - Self-evaluation: I was responsible for backend, testing, LLM integration, and VS Code terminal startup setup (`.vscode` tasks for local run)
 - Strengths: clear end-to-end flow, stable backend tests on core paths, working ML+LLM integration
 - Weaknesses: model availability is unstable, low-quality images still hurt recognition quality, no user account features yet
-- Note: part of the implementation used a fast "vibe-coding" style, which required later refactoring
 
 ### Alina Iakubova
 

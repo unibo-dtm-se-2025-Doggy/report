@@ -22,6 +22,53 @@ Testing frameworks used:
 - **Frontend**: `vitest` + `@testing-library/react`.
   Why: native fit for Vite/TypeScript stack, fast execution in CI, and good support for component-level smoke testing in `jsdom`.
 
+## Performance and responsiveness (NFR1)
+
+NFR1 is validated as an interactive UX requirement rather than a strict benchmark SLA:
+- the frontend exposes an explicit loading state while analysis is running (`isAnalyzing`);
+- the user flow remains responsive (upload -> loading -> result/error) in manual acceptance runs.
+
+Evidence:
+- implementation: `artifact/web/src/hooks/useBreedIdentification.ts`, `artifact/web/src/components/ui/DogInfoPanel.tsx`;
+- acceptance flow: AT-1/AT-2/AT-4 in this section.
+
+## Availability and recoverability (NFR2)
+
+NFR2 is validated as operational readiness (not long-term uptime monitoring):
+- deployment is automated through GitHub Actions on release tags;
+- the backend exposes a health endpoint for quick service checks;
+- deployment and recovery steps are documented for restart/redeploy.
+
+Evidence:
+- automation: `artifact/.github/workflows/backend-deploy.yml`;
+- runtime config: `artifact/backend/fly.toml`;
+- health check endpoint: `artifact/backend/main.py`;
+- operational instructions: `sections/07-deployment/index.md`.
+
+## Security baseline checks (NFR3)
+
+NFR3 is validated as an implemented security baseline for this project scope:
+- CORS middleware is configured in backend API startup;
+- API request shapes are validated by FastAPI request declarations and validation layer;
+- sensitive integration credential (`HF_TOKEN`) is read from environment variables.
+
+Evidence:
+- CORS setup: `artifact/backend/main.py`;
+- request validation entrypoints: `artifact/backend/Core/router.py`;
+- env-based credential handling: `artifact/backend/Features/LLM/llm_engine.py`.
+
+## Responsive UX checks (NFR4)
+
+NFR4 is validated through code-level responsive behavior and manual flow checks:
+- responsive layout classes are used in main page/UI components;
+- loading and error states are explicitly represented in UI logic;
+- manual acceptance flow confirmed the main scenario on browser viewports.
+
+Evidence:
+- responsive UI implementation: `artifact/web/src/pages/Index.tsx`, `artifact/web/src/components/ui/DogInfoPanel.tsx`;
+- loading/error flow state: `artifact/web/src/hooks/useBreedIdentification.ts`;
+- acceptance coverage: AT-1/AT-2/AT-4 in this section.
+
 ## Testing (automated)
 
 ### Unit testing
